@@ -96,6 +96,12 @@ variable "http_load_balancing" {
   default     = true
 }
 
+variable "gke_backup" {
+  type        = bool
+  description = "Enable GKE backup"
+  default     = true
+}
+
 variable "service_external_ips" {
   type        = bool
   description = "Whether external ips specified by a service will be allowed in this cluster"
@@ -416,3 +422,26 @@ variable "timeouts" {
   }
 }
 
+variable "binary_authorization_evaluation_mode" {
+  type        = string
+  description = "Mode of operation for Binary Authorization policy evaluation. Valid values are DISABLED and PROJECT_SINGLETON_POLICY_ENFORCE."
+  default     = ""
+}
+
+variable "monitoring_enabled_components" {
+  type        = list(string)
+  description = "List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS (provider version >= 3.89.0). Empty list is default GKE configuration."
+  default     = []
+}
+
+variable "logging_enabled_components" {
+  type        = list(string)
+  description = "List of services to monitor: SYSTEM_COMPONENTS, WORKLOADS. Empty list is default GKE configuration."
+  default     = []
+}
+
+variable "security_posture_config" {
+  type        = list(object({ mode = string, vulnerability_mode = string }))
+  description = "Mode: Sets the mode of the Kubernetes security posture API's off-cluster features. Available options include DISABLED and BASIC. Vulnerability_mode:Sets the mode of the Kubernetes security posture API's workload vulnerability scanning. Available options include VULNERABILITY_DISABLED and VULNERABILITY_BASIC "
+  default     = []
+}

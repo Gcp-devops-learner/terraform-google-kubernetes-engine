@@ -124,6 +124,12 @@ resource "google_container_cluster" "primary" {
     horizontal_pod_autoscaling {
       disabled = !var.horizontal_pod_autoscaling
     }
+    dynamic "gke_backup_agent_config" {
+      for_each = var.gke_backup ? [1] : [0]
+      content {
+        enabled = var.gke_backup
+      }
+    }
 
   }
 
@@ -227,11 +233,39 @@ resource "google_container_cluster" "primary" {
     }
   }
 
-
   dynamic "authenticator_groups_config" {
     for_each = local.cluster_authenticator_security_group
     content {
       security_group = authenticator_groups_config.value.security_group
+    }
+  }
+
+  dynamic "binary_authorization" {
+    for_each = var.binary_authorization_evaluation_mode != "" ? [1] : []
+    content {
+      evaluation_mode = var.binary_authorization_evaluation_mode
+    }
+  }
+
+  dynamic "logging_config" {
+    for_each = length(var.logging_enabled_components) > 0 ? [1] : []
+    content {
+      enable_components = var.logging_enabled_components
+    }
+  }
+
+  dynamic "monitoring_config" {
+    for_each = length(var.monitoring_enabled_components) > 0 ? [1] : []
+    content {
+      enable_components = length(var.monitoring_enabled_components) > 0 ? var.monitoring_enabled_components : null
+
+    }
+  }
+  dynamic "security_posture_config" {
+    for_each = toset(var.security_posture_config)
+    content {
+      mode               = security_posture_config.value.mode
+      vulnerability_mode = security_posture_config.value.vulnerability_mode
     }
   }
 
